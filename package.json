@@ -8,5 +8,7 @@
   },
   "repository": "git@github.com:KaneyHonest/typing.git",
   "author": "Kaney Honest <yamadataro0407@gmail.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+  }
 }

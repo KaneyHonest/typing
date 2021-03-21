@@ -4,7 +4,7 @@ const router = require('./lib/router');
 
 const server = http
   .createServer((req, res) => {
-    router.router(req, res);
+    router.route(req, res);
   })
   .on('error', e => {
     console.error('Server Error', e);

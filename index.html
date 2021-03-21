@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>タイピングゲーム</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+</head>
+<body>
+  <div id="app">
+    <div v-if="view">
+      <h1>タイピングゲーム</h1>
+      <p>名前を入力</p>
+      <form method="post" action="/posts">
+        <div>
+          <select v-model="selected">
+            <option v-for="option in options" v-bind:value="option.value">
+              {{ option.text }}
+            </option>
+          </select>
+        </div>
+        <div>
+          <input type="text"　v-model="name">
+        </div>
+        <div>
+          <button type="submit" @click="start">ボタン</button>
+        </div>
+      </form>
+    </div>
+    <div v-if="!view">
+      <div v-if="count > 0">{{ count }}</div>
+      <div v-if="count < 1" > 
+        <div v-if="selected > 0">
+          <div>text</div>
+          <span>残り {{ countdown }}</span>
+        </div>
+        <div v-if="selected < 1">
+          <h1>結果</h1>
+          <p>{{ player }}</p>
+          <p>{{ time }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    new Vue({
+      el: '#app',
+      data: {
+        view: true,
+        name: '',
+        time: '',
+        count: 3,
+        selected: 63,
+        options: [
+          { text: '１分', value: 63 },
+          { text: '３分', value: 183 },
+          { text: '５分', value: 303 },
+          { text: '１０分', value: 603}
+        ]
+      },
+      methods: {
+        start: function() {
+          this.time = (this.selected - 3) / 60 + '分間';
+          this.view = false;
+          setInterval(() => { 
+            this.count--; 
+          }, 1000);
+          setInterval(() => {
+            this.selected--;
+          }, 1000);
+        }
+      },
+      computed: {
+        countdown: function() {
+          if ( this.selected % 60 === 0) {
+            return this.selected / 60 + '分';
+          } else if ( this.selected < 60) {
+            return this.selected % 60 + '秒';
+          } else {
+            return Math.floor(this.selected / 60) + '分' + this.selected % 60 + '秒';
+          }
+        },
+        player: function() {
+          if (this.name.length === 0) {
+            return this.name = 'ゲスト';
+          } else {
+            return this.name;
+          }
+        } 
+      }    
+    })
+  </script>
+</body>
+</html>
