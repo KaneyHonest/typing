@@ -5,63 +5,150 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>タイピングゲーム</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simple-keyboard@latest/build/css/index.css">
+  <link rel="stylesheet" href="./index.css">
   <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/simple-keyboard@latest/build/index.js"></script>
 </head>
 <body>
   <div id="app">
     <div v-if="view">
       <h1>タイピングゲーム</h1>
-      <p>名前を入力</p>
-      <form method="post" action="/posts">
-        <div>
-          <select v-model="selected">
-            <option v-for="option in options" v-bind:value="option.value">
-              {{ option.text }}
-            </option>
-          </select>
-        </div>
-        <div>
-          <input type="text"　v-model="name">
-        </div>
-        <div>
-          <button type="submit" @click="start">ボタン</button>
-        </div>
-      </form>
+      <div>
+        <select v-model="selected">
+          <option v-for="option in options" v-bind:value="option.value">
+            {{ option.text }}
+          </option>
+        </select>
+        <input type="checkbox" value="true" v-model="on">
+        <label>翻訳あり</label>
+      </div>
+      <div>
+        <input type="text"　v-model="name" placeholder="名前">
+      </div>
+      <div>
+        <button type="submit" @click="start">ボタン</button>
+      </div>
     </div>
     <div v-if="!view">
       <div v-if="count > 0">{{ count }}</div>
       <div v-if="count < 1" > 
         <div v-if="selected > 0">
-          <div>text</div>
-          <span>残り {{ countdown }}</span>
+          <h3 v-html="type"></h3>
+          <div v-if="on"> {{ translation }}</div>
+          <div> {{ test1 }}文字　残り {{ countdown }}</div>
         </div>
         <div v-if="selected < 1">
           <h1>結果</h1>
-          <p>{{ player }}</p>
-          <p>{{ time }}</p>
+          {{ name }}は{{ time }}に{{ test1 }}文字をタイピングしました
         </div>
       </div>
     </div>
   </div>
+  <div class="simple-keyboard"></div>
   <script>
     new Vue({
       el: '#app',
       data: {
+        sentence: [
+          'Declaration of Independence',
+          'In Congress, July 4, 1776',
+          'The unanimous Declaration of the thirteen united States of America, When in the Course of human events, it becomes necessary for one people to dissolve the political bands which have connected them with another, and to assume among the powers of the earth, the separate and equal station to which the Laws of Nature and of Nature\'\s God entitle them, a decent respect to the opinions of mankind requires that they should declare the causes which impel them to the separation.',
+          'We hold these truths to be self-evident, that all men are created equal, that they are endowed by their Creator with certain unalienable Rights, that among these are Life, Liberty and the pursuit of Happiness.--That to secure these rights, Governments are instituted among Men, deriving their just powers from the consent of the governed, --That whenever any Form of Government becomes destructive of these ends, it is the Right of the People to alter or to abolish it, and to institute new Government, laying its foundation on such principles and organizing its powers in such form, as to them shall seem most likely to effect their Safety and Happiness. Prudence, indeed, will dictate that Governments long established should not be changed for light and transient causes; and accordingly all experience hath shewn, that mankind are more disposed to suffer, while evils are sufferable, than to right themselves by abolishing the forms to which they are accustomed. But when a long train of abuses and usurpations, pursuing invariably the same Object evinces a design to reduce them under absolute Despotism, it is their right, it is their duty, to throw off such Government, and to provide new Guards for their future security.--Such has been the patient sufferance of these Colonies; and such is now the necessity which constrains them to alter their former Systems of Government. The history of the present King of Great Britain is a history of repeated injuries and usurpations, all having in direct object the establishment of an absolute Tyranny over these States. To prove this, let Facts be submitted to a candid world.',
+          'He has refused his Assent to Laws, the most wholesome and necessary for the public good.',
+          'He has forbidden his Governors to pass Laws of immediate and pressing importance, unless suspended in their operation till his Assent should be obtained; and when so suspended, he has utterly neglected to attend to them.',
+          'He has refused to pass other Laws for the accommodation of large districts of people, unless those people would relinquish the right of Representation in the Legislature, a right inestimable to them and formidable to tyrants only.',
+          'He has called together legislative bodies at places unusual, uncomfortable, and distant from the depository of their public Records, for the sole purpose of fatiguing them into compliance with his measures.',
+          'He has dissolved Representative Houses repeatedly, for opposing with manly firmness his invasions on the rights of the people.',
+          'He has refused for a long time, after such dissolutions, to cause others to be elected; whereby the Legislative powers, incapable of Annihilation, have returned to the People at large for their exercise; the State remaining in the mean time exposed to all the dangers of invasion from without, and convulsions within.',
+          'He has endeavoured to prevent the population of these States; for that purpose obstructing the Laws for Naturalization of Foreigners; refusing to pass others to encourage their migrations hither, and raising the conditions of new Appropriations of Lands.',
+          'He has obstructed the Administration of Justice, by refusing his Assent to Laws for establishing Judiciary powers.',
+          'He has made Judges dependent on his Will alone, for the tenure of their offices, and the amount and payment of their salaries.',
+          'He has erected a multitude of New Offices, and sent hither swarms of Officers to harrass our people, and eat out their substance.',
+          'He has kept among us, in times of peace, Standing Armies without the Consent of our legislatures.',
+          'He has affected to render the Military independent of and superior to the Civil power.',
+          'He has combined with others to subject us to a jurisdiction foreign to our constitution, and unacknowledged by our laws; giving his Assent to their Acts of pretended Legislation:',
+          'For Quartering large bodies of armed troops among us:',
+          'For protecting them, by a mock Trial, from punishment for any Murders which they should commit on the Inhabitants of these States:',
+          'For cutting off our Trade with all parts of the world:',
+          'For imposing Taxes on us without our Consent:',
+          'For depriving us in many cases, of the benefits of Trial by Jury:',
+          'For transporting us beyond Seas to be tried for pretended offences',
+          'For abolishing the free System of English Laws in a neighbouring Province, establishing therein an Arbitrary government, and enlarging its Boundaries so as to render it at once an example and fit instrument for introducing the same absolute rule into these Colonies:',
+          'For taking away our Charters, abolishing our most valuable Laws, and altering fundamentally the Forms of our Governments:',
+          'For suspending our own Legislatures, and declaring themselves invested with power to legislate for us in all cases whatsoever.',
+          'He has abdicated Government here, by declaring us out of his Protection and waging War against us.',
+          'He has plundered our seas, ravaged our Coasts, burnt our towns, and destroyed the lives of our people.',
+          'He is at this time transporting large Armies of foreign Mercenaries to compleat the works of death, desolation and tyranny, already begun with circumstances of Cruelty & perfidy scarcely paralleled in the most barbarous ages, and totally unworthy the Head of a civilized nation.',
+          'He has constrained our fellow Citizens taken Captive on the high Seas to bear Arms against their Country, to become the executioners of their friends and Brethren, or to fall themselves by their Hands.',
+          'He has excited domestic insurrections amongst us, and has endeavoured to bring on the inhabitants of our frontiers, the merciless Indian Savages, whose known rule of warfare, is an undistinguished destruction of all ages, sexes and conditions.',
+          'In every stage of these Oppressions We have Petitioned for Redress in the most humble terms: Our repeated Petitions have been answered only by repeated injury. A Prince whose character is thus marked by every act which may define a Tyrant, is unfit to be the ruler of a free people.',
+          'Nor have We been wanting in attentions to our Brittish brethren. We have warned them from time to time of attempts by their legislature to extend an unwarrantable jurisdiction over us. We have reminded them of the circumstances of our emigration and settlement here. We have appealed to their native justice and magnanimity, and we have conjured them by the ties of our common kindred to disavow these usurpations, which, would inevitably interrupt our connections and correspondence. They too have been deaf to the voice of justice and of consanguinity. We must, therefore, acquiesce in the necessity, which denounces our Separation, and hold them, as we hold the rest of mankind, Enemies in War, in Peace Friends.',
+          'We, therefore, the Representatives of the united States of America, in General Congress, Assembled, appealing to the Supreme Judge of the world for the rectitude of our intentions, do, in the Name, and by Authority of the good People of these Colonies, solemnly publish and declare, That these United Colonies are, and of Right ought to be Free and Independent States; that they are Absolved from all Allegiance to the British Crown, and that all political connection between them and the State of Great Britain, is and ought to be totally dissolved; and that as Free and Independent States, they have full Power to levy War, conclude Peace, contract Alliances, establish Commerce, and to do all other Acts and Things which Independent States may of right do. And for the support of this Declaration, with a firm reliance on the protection of divine Providence, we mutually pledge to each other our Lives, our Fortunes and our sacred Honor.',
+        ],
+        translations: [
+          '独立宣言',
+          '議会では、1776年7月4日',
+          '13のアメリカ合衆国の全会一致の宣言、人間の出来事の過程で、ある人々が彼らを他の人々と結びつけた政治的バンドを解散し、地球の力の中で、別々のそして自然の法則と自然の法則が彼らに与える平等な立場であるため、人類の意見をきちんと尊重することは、彼らが彼らを分離に駆り立てる原因を宣言することを要求します。',
+          '私たちはこれらの真実を自明であると考えています。すべての人間は平等に創造され、創造主から特定の不可侵の権利を授けられています。その中には生命、自由、そして幸福の追求があります。--これらの権利を確保するために、政府は男性の間で制定され、統治者の同意から彼らの正当な力を引き出します。--政府の形態がこれらの目的を破壊するようになるときはいつでも、それを変更または廃止し、新しい政府を設立するのは国民の権利です。 、そのような原則に基礎を置き、そのような形でその力を組織化することは、それらに関して、彼らの安全と幸福に影響を与える可能性が最も高いように思われる。確かに、慎重さは、長い間確立されてきた政府が、軽微で一時的な原因のために変更されるべきではないことを指示するでしょう。したがって、すべての経験は、彼らが慣れている形態を廃止することによって自分自身を正すよりも、悪が苦しんでいる間、人類は苦しむ傾向があることを示しています。しかし、常に同じオブジェクトを追求する長い虐待と虐待の列が絶対的な専制政治の下でそれらを減らすための設計を証明するとき、そのような政府を捨て、彼らの将来の安全のために新しい警備員を提供することは彼らの権利であり、彼らの義務です.--これは、これらのコロニーの患者の苦痛でした。そして今、それは彼らが以前の政府システムを変えることを制約する必要性です。現在のイギリス国王の歴史は、繰り返される負傷と皇位簒の歴史であり、これらすべてがこれらの州に対する絶対的な専制政治の確立を直接の目的としている。これを証明するために、事実を率直な世界に提出しましょう。',
+          '彼は、公共の利益のために最も健全で必要な法への同意を拒否しました。',
+          '彼は、彼の同意が得られるまで彼らの活動を中断しない限り、彼の知事が緊急かつ差し迫った重要な法律を可決することを禁じました。そして、そのように中断されたとき、彼は彼らに出席することを完全に怠りました。',
+          '彼は、人々が立法府での代表権、彼らにとって計り知れない権利、専制君主だけに手ごわい権利を放棄しない限り、人々の広い地区の収容に関する他の法律を可決することを拒否しました。',
+          '彼は、公記録の保管場所から離れた、変わった、不快な、そして離れた場所にある立法機関を、彼の措置を遵守するように彼らを疲れさせるという唯一の目的のために呼び集めました。',
+          '彼は、人々の権利への彼の侵略に男らしい堅固さで反対したために、衆議院を繰り返し解散させた。',
+          '彼は、そのような解散の後、他の人を選出させることを長い間拒否してきました。それによって、全滅することができない立法権は、彼らの運動のために一般の人々に戻ってきました。その間、国家は外からの侵入と内なる痙攣のすべての危険にさらされたままである。',
+          '彼はこれらの州の人口を防ぐために努力してきました。その目的のために、外国人の帰化に関する法律を妨害する。ここまでの移住を奨励するために他人を追い越すことを拒否し、土地の新しい割り当ての条件を引き上げます。',
+          '彼は司法権を確立するための法律への同意を拒否することにより、司法行政を妨害しました。',
+          '彼は裁判官を彼らの任期、そして彼らの給料の額と支払いのために彼の意志だけに依存させました。',
+          '彼は多数の新しい事務所を建設し、私たちの人々を苛立たせ、彼らの実体を食い尽くすために、これまでの将校の群れを送りました。',
+          '彼は私たちの間で、平和の時代に、私たちの立法府の同意なしに常備軍を維持してきました。',
+          '彼は軍隊を市民権力から独立させ、市民権力よりも優れたものにするために影響を与えました。',
+          '彼は他の人たちと協力して、私たちを私たちの憲法とは異なる管轄権に服従させ、私たちの法律によって認められていません。ふりをした立法の行為に彼の同意を与える：',
+          '私たちの間で武装した軍隊の大きな体を四分するために：',
+          'これらの州の住民に対して犯すべき殺人に対する罰から、模擬裁判によって彼らを保護するために：',
+          '世界のすべての地域との貿易を断ち切るために：',
+          '私たちの同意なしに私たちに税金を課すために：',
+          '多くの場合、陪審による裁判の利益を私たちから奪ったことに対して：',
+          '私たちを海を越えて輸送し、ふりをした犯罪で裁判にかけられるために',
+          '隣接する州の英国法の自由制度を廃止し、そこに任意の政府を設立し、その境界を拡大して、これらの植民地に同じ絶対的規則を導入するための例と適切な手段を一度に提供するために：',
+          '私たちの憲章を取り去り、私たちの最も価値のある法律を廃止し、そして私たちの政府の形態を根本的に変えたことに対して：',
+          '私たち自身の立法府を一時停止し、すべての場合において私たちのために立法する力を持って投資したことを宣言したことに対して。',
+          '彼は、私たちを彼の保護から外すことを宣言し、私たちに対して戦争を行うことによって、ここで政府を退位させました。',
+          '彼は私たちの海を略奪し、私たちの海岸を荒廃させ、私たちの町を焼き払い、私たちの人々の命を破壊しました。',
+          '彼は現在、死、荒廃、専制政治の仕事を完了するために外国の傭兵の大軍を輸送しています。すでに最も野蛮な時代にほとんど平行していない残虐行為と不貞の状況で始まり、文明国の長にはまったく価値がありません。',
+          '彼は、公海で捕虜にされた私たちの仲間の市民が、彼らの国に対して武器を持ち、彼らの友人や兄弟たちの死刑執行人になるか、彼らの手によって彼ら自身を倒すように制約しました。',
+          '彼は私たちの間で国内の反乱を興奮させ、私たちのフロンティアの住民、戦争の既知のルールがすべての年齢、性別、条件の区別のない破壊である容赦のないインドの野蛮人をもたらすよう努めました。',
+          'これらの抑圧のすべての段階で、私たちは最も謙虚な言葉で救済を請願しました。私たちの繰り返される請願は、繰り返される怪我によってのみ答えられました。暴君を定義する可能性のあるすべての行為によってその性格がこのようにマークされている王子は、自由な人々の支配者になるのにふさわしくありません。',
+          '私たちは、英国の兄弟たちに注意を向けたいとは思っていませんでした。私たちは、立法府が私たちに対して不当な管轄権を拡大しようとする試みを時々警告してきました。私たちはここで私たちの移住と定住の状況を彼らに思い出させました。私たちは彼らの先住民の正義と寛大さに訴え、私たちの共通の親族の絆によって、これらの皇位簒を否認するように彼らを呼び起こしました。それは必然的に私たちのつながりと通信を妨害するでしょう。彼らもまた、正義と血族の声に耳を貸さなかった。したがって、私たちは、私たちの分離を非難する必要性を黙認し、平和の友に、残りの人類、戦争中の敵を保持するように、それらを保持する必要があります。',
+          'したがって、私たちは、総会で、米国の代表者が集まって、私たちの意図の正しさを世界の最高裁判官に訴え、その名において、そしてこれらの善良な人々の権威によって行います。植民地は、厳粛に公表し、宣言します。これらの合衆国植民地は、自由で独立した国であるべきです。彼らは大英帝国へのすべての忠誠から免除され、彼らと英国国家との間のすべての政治的つながりは完全に解消されるべきである。そして、自由で独立した国として、彼らは戦争を課し、平和を締結し、同盟を結び、商取引を確立し、そして独立国が正しく行うかもしれない他のすべての行為や事柄を行う完全な力を持っています。そして、この宣言を支持するために、神の摂理の保護にしっかりと依存して、私たちはお互いに私たちの生活、私たちの幸運、そして私たちの神聖な名誉を誓います。',
+        ],
+        keydown: '',
         view: true,
         name: '',
         time: '',
         count: 3,
         selected: 63,
+        point: 0,
+        test: 0,
+        test1: 0,
+        type: '',
+        on: false,
         options: [
           { text: '１分', value: 63 },
           { text: '３分', value: 183 },
           { text: '５分', value: 303 },
           { text: '１０分', value: 603}
-        ]
+        ],
+      },
+      created: function() {
+        window.addEventListener('keydown', this.inputkey);
       },
       methods: {
         start: function() {
           this.time = (this.selected - 3) / 60 + '分間';
+          if (this.name === '') {
+            this.name = 'ゲスト';
+          };
           this.view = false;
           setInterval(() => { 
             this.count--; 
@@ -69,6 +156,28 @@
           setInterval(() => {
             this.selected--;
           }, 1000);
+          this.type = this.sentence[this.point];
+          this.translation = this.translations[this.point];
+        },
+        inputkey(event) {
+          if ( this.count < 1 && this.selected > 0) {
+            this.keydown = event.key;
+            this.now = this.sentence[this.point];
+            if ( this.keydown === this.now.slice(this.test, this.test + 1)) {
+              this.test++;
+              this.test1++;
+              if (this.test === this.now.length) {
+                this.point++;
+                this.test = '';
+                this.type = this.sentence[this.point];
+                this.translation = this.translations[this.point];
+              } else {
+                this.type = '<strong>' + this.now.slice(0, this.test) + '</strong>' + this.now.slice(this.test, this.now.length);  
+              }
+            } else if (this.keydown !== 'Shift') { 
+              this.type = '<strong>' + this.now.slice(0, this.test) + '</strong>' + '<span style="background-color: red;">' + this.now.slice(this.test, this.test + 1) + '</span>' + this.now.slice(this.test + 1, this.now.length);
+            }
+          }
         }
       },
       computed: {
@@ -81,15 +190,10 @@
             return Math.floor(this.selected / 60) + '分' + this.selected % 60 + '秒';
           }
         },
-        player: function() {
-          if (this.name.length === 0) {
-            return this.name = 'ゲスト';
-          } else {
-            return this.name;
-          }
-        } 
       }    
-    })
+    });
+    const Keyboard = window.SimpleKeyboard.default;
+    const myKeyboard = new Keyboard({ physicalKeyboardHighlight: true, physicalKeyboardHighlightBgColor: "#9ab4d0"});
   </script>
 </body>
 </html>
