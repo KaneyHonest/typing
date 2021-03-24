@@ -11,10 +11,11 @@
   <script src="https://cdn.jsdelivr.net/npm/simple-keyboard@latest/build/index.js"></script>
 </head>
 <body>
-  <div id="app">
-    <div v-if="view">
+  <div id="app" class="app">
+    <div v-if="view" class="top">
       <h1>タイピングゲーム</h1>
       <div>
+        <input type="text"　v-model="name" placeholder="名前">
         <select v-model="selected">
           <option v-for="option in options" v-bind:value="option.value">
             {{ option.text }}
@@ -24,23 +25,22 @@
         <label>翻訳あり</label>
       </div>
       <div>
-        <input type="text"　v-model="name" placeholder="名前">
-      </div>
-      <div>
-        <button type="submit" @click="start">ボタン</button>
+        <button type="submit" @click="start">スタート</button>
       </div>
     </div>
     <div v-if="!view">
-      <div v-if="count > 0">{{ count }}</div>
-      <div v-if="count < 1" > 
+      <div v-if="count > 0" class="count">{{ count }}</div>
+      <div v-if="count < 1"> 
         <div v-if="selected > 0">
-          <h3 v-html="type"></h3>
-          <div v-if="on"> {{ translation }}</div>
-          <div> {{ test1 }}文字　残り {{ countdown }}</div>
+          <div class="main">
+            <p v-html="type" class="sentence"></p>
+            <div v-if="on"> {{ translation }}</div>
+          </div>
+          <div class="count_time"> {{ test1 }}文字　残り {{ countdown }}</div>
         </div>
-        <div v-if="selected < 1">
+        <div v-if="selected < 1" class="result">
           <h1>結果</h1>
-          {{ name }}は{{ time }}に{{ test1 }}文字をタイピングしました
+          <p>{{ name }}は <span class="word">{{ time }}</span>分間に <span class="word">{{ test1 }}</span>文字をタイピングしました</p>
         </div>
       </div>
     </div>
@@ -145,7 +145,7 @@
       },
       methods: {
         start: function() {
-          this.time = (this.selected - 3) / 60 + '分間';
+          this.time = (this.selected - 3) / 60;
           if (this.name === '') {
             this.name = 'ゲスト';
           };
@@ -172,10 +172,10 @@
                 this.type = this.sentence[this.point];
                 this.translation = this.translations[this.point];
               } else {
-                this.type = '<strong>' + this.now.slice(0, this.test) + '</strong>' + this.now.slice(this.test, this.now.length);  
+                this.type = '<span class="type">' + this.now.slice(0, this.test) + '</span>' + this.now.slice(this.test, this.now.length);  
               }
             } else if (this.keydown !== 'Shift') { 
-              this.type = '<strong>' + this.now.slice(0, this.test) + '</strong>' + '<span style="background-color: red;">' + this.now.slice(this.test, this.test + 1) + '</span>' + this.now.slice(this.test + 1, this.now.length);
+              this.type = '<span class="type">' + this.now.slice(0, this.test) + '</span>' + '<span style="background-color: red;">' + this.now.slice(this.test, this.test + 1) + '</span>' + this.now.slice(this.test + 1, this.now.length);
             }
           }
         }

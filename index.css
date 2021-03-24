@@ -1,0 +1,58 @@
+body {
+  width: 80%;
+  margin-right: auto;
+  margin-left: auto;
+}
+.app {
+  border: 6px solid black;
+}
+
+.top {
+  text-align: center;
+  padding: 10px 0 30px 0;
+}
+
+label {
+  font-size: 12px;
+}
+
+button {
+  width: 200px;
+  height: 25px;
+  margin-top: 20px;
+}
+
+.count {
+  text-align: center;
+  padding: 125px;
+  font-size: 45px;
+}
+
+.main {
+  padding: 20px 70px 0 100px;
+  word-break: break-all;
+}
+
+.sentence {
+  font-size: 19px;
+  color: gray;
+}
+
+.type {
+  color: black;
+  font-weight: 900;
+}
+
+.count_time {
+  text-align: right;
+  padding: 0 20px 10px 0;
+}
+
+.result {
+  text-align: center;
+  padding: 100px;
+}
+
+.word {
+  font-size: 20px;
+}
