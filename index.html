@@ -2,13 +2,9 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>タイピングゲーム</title>
+  <link rel="stylesheet" href="index.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simple-keyboard@latest/build/css/index.css">
-  <link rel="stylesheet" href="./index.css">
-  <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/simple-keyboard@latest/build/index.js"></script>
 </head>
 <body>
   <div id="app" class="app">
@@ -36,16 +32,18 @@
             <p v-html="type" class="sentence"></p>
             <div v-if="on"> {{ translation }}</div>
           </div>
-          <div class="count_time"> {{ test1 }}文字　残り {{ countdown }}</div>
+          <div class="count_time"> {{ words }}文字　残り {{ countdown }}</div>
         </div>
         <div v-if="selected < 1" class="result">
           <h1>結果</h1>
-          <p>{{ name }}は <span class="word">{{ time }}</span>分間に <span class="word">{{ test1 }}</span>文字をタイピングしました</p>
+          <p>{{ name }}は <span class="word">{{ time }}</span>分間に <span class="word">{{ words }}</span>文字をタイピングしました</p>
         </div>
       </div>
     </div>
   </div>
   <div class="simple-keyboard"></div>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/simple-keyboard@latest/build/index.js"></script>
   <script>
     new Vue({
       el: '#app',
@@ -129,8 +127,8 @@
         count: 3,
         selected: 63,
         point: 0,
-        test: 0,
-        test1: 0,
+        word: 0,
+        words: 0,
         type: '',
         on: false,
         options: [
@@ -163,19 +161,19 @@
           if ( this.count < 1 && this.selected > 0) {
             this.keydown = event.key;
             this.now = this.sentence[this.point];
-            if ( this.keydown === this.now.slice(this.test, this.test + 1)) {
-              this.test++;
-              this.test1++;
-              if (this.test === this.now.length) {
+            if ( this.keydown === this.now.slice(this.word, this.word + 1)) {
+              this.word++;
+              this.words++;
+              if (this.word === this.now.length) {
                 this.point++;
-                this.test = '';
+                this.word = '';
                 this.type = this.sentence[this.point];
                 this.translation = this.translations[this.point];
               } else {
-                this.type = '<span class="type">' + this.now.slice(0, this.test) + '</span>' + this.now.slice(this.test, this.now.length);  
+                this.type = '<span class="type">' + this.now.slice(0, this.word) + '</span>' + this.now.slice(this.word, this.now.length);  
               }
             } else if (this.keydown !== 'Shift') { 
-              this.type = '<span class="type">' + this.now.slice(0, this.test) + '</span>' + '<span style="background-color: red;">' + this.now.slice(this.test, this.test + 1) + '</span>' + this.now.slice(this.test + 1, this.now.length);
+              this.type = '<span class="type">' + this.now.slice(0, this.word) + '</span>' + '<span style="background-color: red;">' + this.now.slice(this.word, this.word + 1) + '</span>' + this.now.slice(this.word + 1, this.now.length);
             }
           }
         }
