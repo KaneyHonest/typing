@@ -169,12 +169,15 @@
           this.translation = this.translations[this.point];
         },
         inputkey(event) {
+          // タイピング画面のときに
           if ( this.count < 1 && this.selected > 0) {
             this.keydown = event.key;
             this.now = this.sentence[this.point];
+            // 押したキーが合っている数番目の文字と同じだったなら
             if ( this.keydown === this.now.slice(this.word, this.word + 1)) {
               this.word++;
               this.words++;
+              // 文章の文字数とカウントが同じなら次の文章へ
               if (this.word === this.now.length) {
                 this.point++;
                 this.word = '';
